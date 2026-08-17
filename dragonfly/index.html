@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFFBF4">
+<title>Dragonfly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#FFFBF4;
+    --ink-2:#FFF6EC;
+    --paper:#3D3244;
+    --paper-dim:rgba(61,50,68,0.64);
+    --moss:#6FA35B;
+    --fern:#4E6B48;
+    --orchid:#9A63B8;
+    --rose:#DB7FA4;
+    --wing:linear-gradient(120deg,#6FA35B 0%,#3FA98A 32%,#9A63B8 68%,#DB7FA4 100%);
+    --card:rgba(255,255,255,0.78);
+    --card-line:rgba(61,50,68,0.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Karla',sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    min-height:100vh;
+    background-image:
+      radial-gradient(1100px 520px at 85% -8%, rgba(185,139,208,0.20), transparent 60%),
+      radial-gradient(900px 480px at -10% 22%, rgba(143,181,115,0.18), transparent 55%),
+      radial-gradient(700px 500px at 60% 108%, rgba(233,169,190,0.18), transparent 60%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:32px 22px 64px}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;justify-content:center}
+  .tab{
+    font-family:'Karla',sans-serif;font-weight:600;font-size:14px;
+    background:transparent;border:1px solid var(--card-line);
+    color:var(--paper-dim);border-radius:999px;padding:8px 18px;cursor:pointer;
+    transition:all .15s ease;
+  }
+  .tab.active{background:var(--wing);color:#fff;border-color:transparent}
+  .panel{display:none}
+  .panel.active{display:block}
+  header{text-align:center;padding:18px 0 8px}
+  .fly{width:92px;height:92px;margin:0 auto 6px;display:block}
+  @keyframes hover-fly{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes shimmer{0%,100%{opacity:.85}50%{opacity:1}}
+  .fly{animation:hover-fly 6s ease-in-out infinite}
+  .fly .wings{animation:shimmer 6s ease-in-out infinite}
+  @media (prefers-reduced-motion:reduce){.fly,.fly .wings{animation:none}}
+  h1{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;font-size:44px;letter-spacing:0.02em;line-height:1.05;
+    background:var(--wing);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .greet{color:var(--paper-dim);font-size:15px;margin-top:6px}
+  .datebar{
+    margin-top:4px;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--paper-dim);font-weight:600;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-line);
+    border-radius:20px;
+    padding:24px 22px;
+    margin-top:22px;
+    backdrop-filter:blur(6px);
+    box-shadow:0 8px 28px rgba(61,50,68,0.08);
+    position:relative;overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;inset:0 0 auto 0;height:2px;
+    background:var(--wing);opacity:.55;
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:0.18em;text-transform:uppercase;font-weight:700;
+    color:var(--moss);margin-bottom:10px;
+  }
+  .card.violet .eyebrow{color:var(--orchid)}
+  .card.rose .eyebrow{color:var(--rose)}
+  .card h2{
+    font-family:'Cormorant Garamond',serif;font-weight:600;font-size:27px;line-height:1.15;
+    margin-bottom:8px;
+  }
+  .card p.lead{color:var(--paper-dim);font-size:15px;margin-bottom:16px}
+  .btn{
+    display:block;width:100%;text-align:center;text-decoration:none;cursor:pointer;
+    font-family:'Karla',sans-serif;font-weight:700;font-size:16px;
+    padding:15px 18px;border-radius:14px;border:none;
+    color:#fff;background:var(--wing);
+    transition:transform .12s ease, filter .12s ease;
+  }
+  .btn:active{transform:scale(0.985);filter:brightness(1.05)}
+  .btn.ghost{
+    background:transparent;color:var(--paper);
+    border:1px solid var(--card-line);font-weight:600;
+  }
+  .btn + .btn{margin-top:10px}
+  .btn:focus-visible,.chip:focus-visible,.tab:focus-visible{outline:2px solid var(--orchid);outline-offset:3px}
+  .reflection{
+    margin-top:16px;border-radius:14px;border:1px solid var(--card-line);
+    background:rgba(255,255,255,0.72);padding:18px;display:none;
+  }
+  .reflection.show{display:block}
+  .reflection .rtitle{
+    font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;
+    color:var(--orchid);margin-bottom:10px;
+  }
+  .reflection .rbody{
+    font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.55;font-weight:500;
+  }
+  .reflection .rquestion{
+    margin-top:14px;font-family:'Karla',sans-serif;font-size:14.5px;
+    color:var(--paper-dim);font-style:italic;
+  }
+  .weeklinks{display:grid;gap:10px}
+  .wlink{
+    display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--paper);
+    border:1px solid var(--card-line);border-radius:14px;padding:14px 16px;
+    transition:background .12s ease;
+  }
+  .wlink:active{background:rgba(61,50,68,0.05)}
+  .wlink .dot{width:10px;height:10px;border-radius:50%;flex:none}
+  .wlink .t{font-weight:700;font-size:15.5px}
+  .wlink .s{color:var(--paper-dim);font-size:13px}
+  .wlink .arrow{margin-left:auto;color:var(--paper-dim);font-size:18px}
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:4px}
+  .chip{
+    font-family:'Karla',sans-serif;font-weight:600;font-size:14.5px;color:var(--paper);
+    background:transparent;border:1px solid var(--card-line);border-radius:999px;
+    padding:9px 16px;cursor:pointer;transition:all .15s ease;
+  }
+  .chip.active{
+    background:var(--wing);color:#fff;border-color:transparent;font-weight:700;
+  }
+  .prayer{display:none;margin-top:18px}
+  .prayer.show{display:block}
+  .prayer .open{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;
+    font-size:21px;line-height:1.5;
+  }
+  .prayer .verse{
+    margin-top:14px;padding:14px 16px;border-left:2px solid var(--moss);
+    background:rgba(143,181,115,0.14);border-radius:0 12px 12px 0;
+  }
+  .prayer .verse .vt{font-size:15px;line-height:1.55}
+  .prayer .verse .vr{
+    margin-top:6px;font-size:12.5px;letter-spacing:0.1em;text-transform:uppercase;
+    font-weight:700;color:var(--moss);
+  }
+  .prayer .closer{
+    margin-top:18px;text-align:center;
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;
+    color:var(--paper-dim);
+  }
+  .vblock{
+    margin-top:14px;padding:14px 16px;border-left:2px solid var(--moss);
+    background:rgba(143,181,115,0.14);border-radius:0 12px 12px 0;
+    font-size:15px;line-height:1.55;
+  }
+  .vblock .vr{
+    display:block;margin-top:6px;font-size:12.5px;letter-spacing:0.1em;
+    text-transform:uppercase;font-weight:700;color:var(--moss);
+  }
+  .hd-serif{font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.55;font-weight:500}
+  textarea{
+    width:100%;border:1px solid var(--card-line);border-radius:12px;padding:12px;
+    font-family:'Karla',sans-serif;font-size:15px;color:var(--paper);
+    background:rgba(255,255,255,0.72);resize:vertical;
+  }
+  textarea:focus-visible{outline:2px solid var(--orchid);outline-offset:2px}
+  .orbwrap{display:flex;flex-direction:column;align-items:center;padding:10px 0 4px}
+  .orb{
+    width:150px;height:150px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.85), rgba(143,181,115,0.55) 45%, rgba(154,99,184,0.4));
+    box-shadow:0 12px 44px rgba(111,163,91,0.28), inset 0 0 30px rgba(255,255,255,0.35);
+    transform:scale(1);transition:transform 1s linear;
+  }
+  .phaselabel{
+    margin-top:20px;font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;
+    min-height:32px;text-align:center;
+  }
+  .sttime{margin-top:4px;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:var(--paper-dim);font-weight:600;min-height:18px}
+  @keyframes st-ambient{0%,100%{transform:scale(0.82)}50%{transform:scale(0.95)}}
+  @media (prefers-reduced-motion:reduce){#sgOrb{animation:none !important}}
+  .stselect{
+    width:100%;border:1px solid var(--card-line);border-radius:12px;padding:11px 12px;
+    font-family:'Karla',sans-serif;font-size:15px;color:var(--paper);
+    background:rgba(255,255,255,0.72);margin-bottom:12px;
+  }
+  .wbtn{
+    text-align:left;background:transparent;cursor:pointer;width:100%;
+    font-family:'Karla',sans-serif;
+  }
+  footer{
+    margin-top:44px;text-align:center;color:var(--paper-dim);font-size:13.5px;
+  }
+  footer .f-line{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;
+    background:var(--wing);-webkit-background-clip:text;background-clip:text;color:transparent;
+    margin-bottom:4px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="spiritual" role="tab" aria-selected="true">Dragonfly</button>
+    <button class="tab" data-tab="out" role="tab" aria-selected="false">Out &amp; About</button>
+    <button class="tab" data-tab="still" role="tab" aria-selected="false">Stillwater</button>
+    <button class="tab" data-tab="hard" role="tab" aria-selected="false">Hard Days</button>
+  </nav>
+
+  <!-- ===================== SPIRITUAL PANEL ===================== -->
+  <div id="panel-spiritual" class="panel active">
+
+    <header>
+      <svg class="fly" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="wingL" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#8FB573"/><stop offset="55%" stop-color="#7FBFA0"/><stop offset="100%" stop-color="#B98BD0"/>
+          </linearGradient>
+          <linearGradient id="wingR" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#E9A9BE"/><stop offset="55%" stop-color="#B98BD0"/><stop offset="100%" stop-color="#7FBFA0"/>
+          </linearGradient>
+        </defs>
+        <g class="wings" opacity="0.9">
+          <ellipse cx="38" cy="44" rx="26" ry="11" transform="rotate(-24 38 44)" fill="url(#wingL)" opacity="0.75"/>
+          <ellipse cx="82" cy="44" rx="26" ry="11" transform="rotate(24 82 44)" fill="url(#wingR)" opacity="0.75"/>
+          <ellipse cx="40" cy="60" rx="22" ry="9" transform="rotate(-8 40 60)" fill="url(#wingL)" opacity="0.55"/>
+          <ellipse cx="80" cy="60" rx="22" ry="9" transform="rotate(8 80 60)" fill="url(#wingR)" opacity="0.55"/>
+        </g>
+        <circle cx="60" cy="34" r="5.5" fill="#4A3D52"/>
+        <rect x="57.4" y="40" width="5.2" height="46" rx="2.6" fill="#4A3D52"/>
+        <rect x="58.4" y="86" width="3.2" height="14" rx="1.6" fill="#4A3D52" opacity="0.85"/>
+      </svg>
+      <h1>Dragonfly</h1>
+      <p class="greet" id="greet">Good morning</p>
+      <p class="datebar" id="datebar"></p>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">Today</p>
+      <h2>Today&rsquo;s Text</h2>
+      <p class="lead">One scripture, one thought, every morning. Start here.</p>
+      <a class="btn" id="dailyBtn" href="#" target="_blank" rel="noopener">Read today&rsquo;s text</a>
+      <button class="btn ghost" id="reflectBtn">I just read it — sit with me</button>
+      <div class="reflection" id="reflection">
+        <p class="rtitle">A quiet moment</p>
+        <div class="rbody" id="rbody"></div>
+        <p class="rquestion" id="rquestion"></p>
+      </div>
+    </section>
+
+    <section class="card violet">
+      <p class="eyebrow">This Week</p>
+      <h2>The Week&rsquo;s Spiritual Food</h2>
+      <p class="lead">Everything opens to the current week automatically.</p>
+      <p id="weektheme" style="display:none;margin:-6px 0 16px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--orchid)"></p>
+      <div class="weeklinks">
+        <a class="wlink" href="https://wol.jw.org/en/wol/meetings/r1/lp-e" target="_blank" rel="noopener">
+          <span class="dot" style="background:var(--moss)"></span>
+          <span><span class="t">Midweek meeting</span><br><span class="s">Treasures, ministry &amp; Christian living</span></span>
+          <span class="arrow">&rsaquo;</span>
+        </a>
+        <button class="btn ghost" id="mwBtn" style="font-size:14.5px;padding:12px 16px">What&rsquo;s it mean for me?</button>
+        <div class="reflection" id="mwreflection">
+          <p class="rtitle" id="mwtitle">For this week&rsquo;s reading</p>
+          <div class="rbody" id="mwbody"></div>
+          <p class="rquestion" id="mwquestion"></p>
+        </div>
+        <a class="wlink" id="wtlink" href="https://wol.jw.org/en/wol/meetings/r1/lp-e" target="_blank" rel="noopener" style="margin-top:6px">
+          <span class="dot" style="background:var(--orchid)"></span>
+          <span><span class="t">Watchtower study</span><br><span class="s" id="wtsub">This weekend&rsquo;s article</span></span>
+          <span class="arrow">&rsaquo;</span>
+        </a>
+        <button class="btn ghost" id="weekBtn" style="font-size:14.5px;padding:12px 16px">What&rsquo;s it mean for me?</button>
+        <div class="reflection" id="wreflection">
+          <p class="rtitle" id="wttitle">For this week</p>
+          <div class="rbody" id="wbody"></div>
+          <p class="rquestion" id="wquestion"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card rose">
+      <p class="eyebrow">Prayer</p>
+      <h2>Where&rsquo;s your heart right now?</h2>
+      <p class="lead">Tap one. It only opens the door &mdash; the rest of the conversation is yours.</p>
+      <div class="chips" id="chips" role="group" aria-label="How are you feeling?"></div>
+      <div class="prayer" id="prayer">
+        <p class="open" id="pOpen"></p>
+        <div class="verse">
+          <p class="vt" id="pVerse"></p>
+          <p class="vr" id="pRef"></p>
+        </div>
+        <p class="closer">&hellip;now it&rsquo;s just you and Him.</p>
+      </div>
+    </section>
+
+    <footer>
+      <p class="f-line">Kept, like a dragonfly keeps the light.</p>
+      <p>Made with love by your brother.</p>
+    </footer>
+  </div>
+
+  <!-- ===================== HARD DAYS PANEL ===================== -->
+  <div id="panel-hard" class="panel">
+    <header style="padding-top:8px">
+      <h1 style="font-size:32px">Hard Days</h1>
+      <p class="greet" style="margin-top:4px">For the moments that hit hard. Nothing here judges you.</p>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">Right now</p>
+      <h2>When the craving hits</h2>
+      <p class="lead">It has a shape: it rises, it crests, it falls. It always falls — whether or not you drink. You don’t have to beat it. Just outlast it.</p>
+      <button class="btn" id="hdWaveBtn">It’s hitting right now</button>
+      <div class="reflection" id="hdWave">
+        <p class="rtitle">Ride the wave</p>
+        <div class="rbody">Most cravings break inside 20 minutes. Start the clock and let this one break.</div>
+        <button class="btn ghost" id="hdTimerBtn" style="margin-top:14px">Start 20 minutes</button>
+        <p id="hdTimerDisplay" style="display:none;text-align:center;font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:600;margin-top:12px"></p>
+        <p id="hdTimerDone" style="display:none;margin-top:12px;text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px">The wave broke. You outlasted it.</p>
+        <p class="rquestion" style="margin-top:16px">While it runs, do one — cravings live in stillness:</p>
+        <div class="chips" style="margin-top:10px">
+          <button class="chip hd-act" type="button" data-act="room">Change the room</button>
+          <button class="chip hd-act" type="button" data-act="water">Cold water</button>
+          <button class="chip hd-act" type="button" data-act="eat">Eat something real</button>
+          <button class="chip hd-act" type="button" data-act="walk">Step outside</button>
+        </div>
+        <p id="hdActText" style="display:none;margin-top:12px;font-size:14.5px;color:var(--paper-dim);line-height:1.5"></p>
+        <button class="btn ghost" id="hdWalkBtn" style="display:none;margin-top:10px;font-size:14.5px;padding:12px 16px">Take the walk ›</button>
+        <button class="btn ghost" id="hdBreatheBtn" style="margin-top:10px;font-size:14.5px;padding:12px 16px">Or breathe through it ›</button>
+        <div class="vblock">“God is faithful, and he will not let you be tempted beyond what you can bear, but along with the temptation he will also make the way out.”<span class="vr">1 Corinthians 10:13</span></div>
+        <p class="rquestion" style="margin-top:12px">The way out usually looks like one of those buttons.</p>
+      </div>
+      <div style="margin-top:16px;border-top:1px solid var(--card-line);padding-top:16px">
+        <p style="font-size:14px;color:var(--paper-dim);margin-bottom:10px">Half the time a craving is one of these wearing a mask:</p>
+        <div class="chips" id="hdHalt"></div>
+        <p id="hdHaltText" style="display:none;margin-top:12px;font-size:14.5px;color:var(--paper-dim);line-height:1.5"></p>
+      </div>
+    </section>
+
+    <section class="card violet">
+      <p class="eyebrow">Before you decide</p>
+      <h2>Play the tape forward</h2>
+      <p class="lead">The craving only ever shows the first frame.</p>
+      <p class="hd-serif">It is showing you tonight. Make it show you tomorrow morning too — all of it.</p>
+      <p class="hd-serif" style="margin-top:10px">Then picture tomorrow morning the other way: waking up clear, nothing to undo, one more day that counts. Decide from there.</p>
+      <div style="margin-top:18px;border-top:1px solid var(--card-line);padding-top:16px">
+        <p class="eyebrow" style="color:var(--orchid)">Written on a good day</p>
+        <h2 style="font-size:22px">Why I’m not going back</h2>
+        <p class="lead">Fill this in when you’re steady. It will be waiting here when you’re not — the bad-day brain can’t write reasons, only read them.</p>
+        <textarea id="hdReasons" rows="4" placeholder="One reason per line…"></textarea>
+        <button class="btn ghost" id="hdSaveReasons" style="margin-top:10px">Save my reasons</button>
+        <p id="hdSavedNote" style="display:none;margin-top:8px;text-align:center;font-size:13.5px;color:var(--moss)">Saved. They’ll be here.</p>
+      </div>
+    </section>
+
+    <section class="card rose">
+      <p class="eyebrow">Name it</p>
+      <h2>What kind of hard is it?</h2>
+      <p class="lead">Tap the one that fits. Small next steps only — nothing here asks for a hero.</p>
+      <div class="chips" id="hdChips" role="group" aria-label="What kind of hard is it?"></div>
+      <div class="reflection" id="hdMoment">
+        <p class="rtitle" id="hdmTitle"></p>
+        <div class="rbody" id="hdmBody"></div>
+        <div class="vblock"><span id="hdmVerse"></span><span class="vr" id="hdmRef"></span></div>
+        <p class="rquestion" id="hdmStep"></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">Remember</p>
+      <h2>This season has an end</h2>
+      <p class="hd-serif">The exile came with a number on it — seventy years, not forever. He disciplines “to the proper degree”: measured, purposeful, and then finished.</p>
+      <p class="hd-serif" style="margin-top:10px">And tonight’s craving has a number on it too. About twenty minutes.</p>
+    </section>
+
+    <!-- LETTER FROM JON — write it, paste it over YOUR LETTER HERE, then delete these comment markers to make the card live.
+    <section class="card rose">
+      <p class="eyebrow">From Jon</p>
+      <h2>Read this when you want to quit</h2>
+      <div class="hd-serif" style="white-space:pre-line">YOUR LETTER HERE</div>
+    </section>
+    -->
+
+    <section class="card violet">
+      <p class="eyebrow">The strong move</p>
+      <h2>Reach out before, not after</h2>
+      <p class="lead">You don’t have to be strong first and reach out second. Reaching out first is the strong move.</p>
+      <a class="btn" href="sms:+14849495381">Call or text someone you love</a>
+      <button class="btn ghost" id="hdMeetingBtn">Find a meeting to go to now ›</button>
+      <p style="margin-top:12px;font-size:14px;color:var(--paper-dim);text-align:center;line-height:1.5">During the craving — not to confess after. During counts double.<br>The brothers walking with you count too. So does anyone on the Zoom.</p>
+    </section>
+
+    <footer>
+      <p class="f-line">Kept, like a dragonfly keeps the light.</p>
+      <p>Made with love by your brother.</p>
+    </footer>
+  </div>
+
+  <!-- ===================== STILLWATER PANEL ===================== -->
+  <div id="panel-still" class="panel">
+    <header style="padding-top:8px">
+      <h1 style="font-size:32px">Stillwater</h1>
+      <p class="greet" style="margin-top:4px">Borrowed from Jon’s quiet-time app. Three ways to slow everything down.</p>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">Breathe</p>
+      <h2>Follow the orb</h2>
+      <p class="lead">It grows, you breathe in. It rests, you hold. It settles, you let go. That’s the whole practice.</p>
+      <div class="orbwrap">
+        <div class="orb" id="stOrb"></div>
+        <p class="phaselabel" id="stPhase">Ready when you are</p>
+        <p class="sttime" id="stTime"></p>
+      </div>
+      <p style="font-size:13px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:var(--fern);margin:14px 0 8px">Pattern</p>
+      <div class="chips" id="stTechChips">
+        <button class="chip active" type="button" data-tech="coherent">Steady 5–5</button>
+        <button class="chip" type="button" data-tech="box">Box 4–4–4–4</button>
+        <button class="chip" type="button" data-tech="relax">Sleepy 4–7–8</button>
+      </div>
+      <p id="stTechNote" style="margin-top:8px;font-size:13.5px;color:var(--paper-dim)">Steady 5–5 — the everyday one. Calms without making you drowsy.</p>
+      <p style="font-size:13px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:var(--fern);margin:16px 0 8px">How long</p>
+      <div class="chips" id="stDurChips">
+        <button class="chip" type="button" data-min="1">1 min</button>
+        <button class="chip active" type="button" data-min="3">3 min</button>
+        <button class="chip" type="button" data-min="5">5 min</button>
+      </div>
+      <button class="btn" id="stGo" style="margin-top:18px">Begin</button>
+      <div class="vblock">“By well-watered resting-places he leads me. He refreshes me.”<span class="vr">Psalm 23:2, 3</span></div>
+    </section>
+
+    <section class="card violet">
+      <p class="eyebrow">Guided</p>
+      <h2>Let a voice lead</h2>
+      <p class="lead" id="nStatus">Close your eyes — the voice does the remembering. Using the gentle built-in voice.</p>
+      <select id="nVoice" class="stselect" style="display:none" aria-label="Narrator voice"></select>
+      <div class="chips" style="margin-bottom:14px">
+        <button class="chip active" type="button" id="nVoiceOn">Voice on</button>
+        <button class="chip" type="button" id="nSample">Hear a sample</button>
+      </div>
+      <div class="weeklinks" id="sgList"></div>
+    </section>
+
+    <section class="card" id="sgCard" style="display:none">
+      <p class="eyebrow" id="sgEyebrow">Session</p>
+      <h2 style="font-size:22px" id="sgName"></h2>
+      <div class="orbwrap">
+        <div class="orb" id="sgOrb" style="width:110px;height:110px;animation:st-ambient 8s ease-in-out infinite"></div>
+      </div>
+      <p class="hd-serif" id="sgPrompt" style="text-align:center;min-height:64px;margin-top:8px"></p>
+      <p class="sttime" id="sgTime" style="text-align:center"></p>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn ghost" type="button" id="sgPause" style="flex:1">Pause</button>
+        <button class="btn ghost" type="button" id="sgEnd" style="flex:1">End</button>
+      </div>
+    </section>
+
+    <section class="card violet">
+      <p class="eyebrow">When to use which</p>
+      <h2>Three tools, three moments</h2>
+      <div class="weeklinks" style="margin-top:4px">
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--moss)"></span>
+          <span><span class="t">Steady 5–5</span><br><span class="s">Anytime — before a meeting, after a hard call, on a walk</span></span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--orchid)"></span>
+          <span><span class="t">Box 4–4–4–4</span><br><span class="s">When your mind is racing — the counting gives it a job</span></span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--rose)"></span>
+          <span><span class="t">Sleepy 4–7–8</span><br><span class="s">In bed, lights out — the long exhale tells your body it’s safe</span></span>
+        </div>
+      </div>
+      <p style="margin-top:16px;font-size:14.5px;color:var(--paper-dim);line-height:1.5">And on the hard nights: a craving and a racing heart use the same off-switch. Two rounds of box breathing before you decide anything.</p>
+    </section>
+
+    <footer>
+      <p class="f-line">Kept, like a dragonfly keeps the light.</p>
+      <p>Made with love by your brother.</p>
+    </footer>
+  </div>
+
+  <!-- ===================== OUT & ABOUT PANEL ===================== -->
+  <div id="panel-out" class="panel">
+    <header style="padding-top:8px">
+      <h1 style="font-size:32px">Out &amp; About</h1>
+      <p class="greet" style="margin-top:4px">Quiet, clean things near 19123</p>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow">This week</p>
+      <h2>Simple things nearby</h2>
+      <p class="lead">Only the quiet, clean ones. No pressure either way.</p>
+      <div class="weeklinks">
+        <a class="wlink" href="https://northernlibertiesfarmersmarket.org/" target="_blank" rel="noopener">
+          <span class="dot" style="background:var(--moss)"></span>
+          <span>
+            <span class="t">Farmers Market</span><br>
+            <span class="s">Saturday 10–2 · Piazza Alta · fresh and local</span>
+          </span>
+          <span class="arrow">›</span>
+        </a>
+        <a class="wlink" href="https://www.nlna.org/" target="_blank" rel="noopener">
+          <span class="dot" style="background:var(--orchid)"></span>
+          <span>
+            <span class="t">Liberty Lands</span><br>
+            <span class="s">Quiet park walks · green space · occasional free movies</span>
+          </span>
+          <span class="arrow">›</span>
+        </a>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--rose)"></span>
+          <span>
+            <span class="t">Neighborhood walk</span><br>
+            <span class="s">Coffee, waterfront, or just the streets — nothing scheduled</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card violet">
+      <p class="eyebrow">Meetings nearby</p>
+      <h2>If you feel like sitting in</h2>
+      <p class="lead">Three English congregations share the hall on Glenwood — about 2 miles away, a 10-minute drive. All are welcome.</p>
+      <div class="weeklinks">
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--moss)"></span>
+          <span>
+            <span class="t">Northern Liberties</span><br>
+            <span class="s">Wed 7:00 PM · Sat 10:30 AM</span>
+          </span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--orchid)"></span>
+          <span>
+            <span class="t">East Park</span><br>
+            <span class="s">Tue 7:30 PM · Sun 12:30 PM</span>
+          </span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--rose)"></span>
+          <span>
+            <span class="t">Ridge</span><br>
+            <span class="s">Thu 7:00 PM · Sun 9:30 AM</span>
+          </span>
+        </div>
+      </div>
+      <p style="margin-top:18px;font-size:14.5px;color:var(--paper-dim);line-height:1.5">
+        <strong style="color:var(--paper)">East Park Kingdom Hall</strong><br>
+        2901 W Glenwood Ave<br>
+        Philadelphia, PA 19121<br>
+        215-765-1904<br>
+        <span style="color:var(--moss)">About 2 mi · 10 min drive</span>
+      </p>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow">A little farther</p>
+      <h2>The Hall Mall</h2>
+      <p class="lead">Six English congregations share one Kingdom Hall — about 7 miles, a 20-minute drive. Plenty of meeting times to choose from.</p>
+      <div class="weeklinks">
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--moss)"></span>
+          <span>
+            <span class="t">Roosevelt</span><br>
+            <span class="s">Thu 7:00 PM · Sun 9:30 AM</span>
+          </span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--orchid)"></span>
+          <span>
+            <span class="t">Wissinoming</span><br>
+            <span class="s">Wed 7:30 PM · Sat 10:00 AM</span>
+          </span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--rose)"></span>
+          <span>
+            <span class="t">North English</span><br>
+            <span class="s">Tue 7:30 PM · Sun 12:30 PM</span>
+          </span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--moss)"></span>
+          <span>
+            <span class="t">Pennypack Park</span><br>
+            <span class="s">Mon 7:00 PM · Sat 10:00 AM</span>
+          </span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--orchid)"></span>
+          <span>
+            <span class="t">Aramingo</span><br>
+            <span class="s">Thu 7:30 PM · Sun 10:00 AM</span>
+          </span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--rose)"></span>
+          <span>
+            <span class="t">East Mayfair</span><br>
+            <span class="s">Tue 7:30 PM · Sat 10:30 AM</span>
+          </span>
+        </div>
+      </div>
+      <p style="margin-top:18px;font-size:14.5px;color:var(--paper-dim);line-height:1.5">
+        <strong style="color:var(--paper)">Kingdom Hall</strong><br>
+        4450 Oakland Street<br>
+        Philadelphia, PA 19124<br>
+        215-743-2506<br>
+        <span style="color:var(--moss)">About 7 mi · 20 min drive</span>
+      </p>
+    </section>
+
+    <section class="card rose">
+      <p class="eyebrow">From home</p>
+      <h2>Souderton (Jon&rsquo;s hall)</h2>
+      <p class="lead">Sit in with us on Zoom from home, or come in person anytime.</p>
+      <div class="weeklinks">
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--moss)"></span>
+          <span>
+            <span class="t">Sunday</span><br>
+            <span class="s">1:00 PM</span>
+          </span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--orchid)"></span>
+          <span>
+            <span class="t">Tuesday</span><br>
+            <span class="s">7:00 PM</span>
+          </span>
+        </div>
+      </div>
+      <a href="https://zoom.us/j/9068149999" target="_blank" rel="noopener" class="btn" style="margin-top:16px">
+        Join Zoom Meeting
+      </a>
+      <p style="margin-top:12px;text-align:center;font-size:14.5px;color:var(--paper-dim)">
+        Passcode: <strong style="color:var(--paper)">7301037</strong>
+      </p>
+      <p style="margin-top:18px;font-size:14.5px;color:var(--paper-dim);line-height:1.5">
+        <strong style="color:var(--paper)">Kingdom Hall</strong><br>
+        1000 Doylestown Pike<br>
+        Quakertown, PA 18951
+      </p>
+      <div style="margin-top:18px;padding:16px;border:1px solid var(--card-line);border-radius:14px;background:rgba(255,255,255,0.72)">
+        <p style="font-size:13px;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;color:var(--orchid);margin-bottom:8px">Join by phone</p>
+        <p style="font-size:18px;font-weight:600;margin-bottom:4px">906-814-9999</p>
+        <p style="font-size:15px;color:var(--paper-dim)">Passcode: 7301037</p>
+      </div>
+    </section>
+
+    <footer>
+      <p class="f-line">Kept, like a dragonfly keeps the light.</p>
+      <p>Made with love by your brother.</p>
+    </footer>
+  </div>
+
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>{
+      t.classList.remove('active');
+      t.setAttribute('aria-selected','false');
+    });
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected','true');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+const now = new Date();
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+document.getElementById('datebar').textContent =
+  days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate();
+const h = now.getHours();
+document.getElementById('greet').textContent =
+  h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+
+const y = now.getFullYear();
+const m = now.getMonth() + 1;
+const d = now.getDate();
+document.getElementById('dailyBtn').href = `https://wol.jw.org/en/wol/dt/r1/lp-e/${y}/${m}/${d}`;
+
+const reflections = [
+  { body: "You opened the page. That is already something.\nJehovah is not measuring how perfectly you understand it today — He is glad you came.", question: "What one phrase do you want to carry into the rest of this day?" },
+  { body: "The words are the same ones millions of others are reading this morning.\nYou are not late. You are not behind. You are simply here.", question: "Is there a quiet place inside you that feels a little less alone after reading?" },
+  { body: "Some days the text lands like a clear voice. Some days it is just a seed.\nBoth are enough for Jehovah.", question: "What would it look like to let this sit with you for the next hour, without forcing an answer?" },
+  { body: "You did not have to earn the right to open this page again.\nThe door was already open. You simply walked through.", question: "Is there one sentence you want to say back to Him before you go on with the day?" },
+  { body: "Reading it once is enough. But if a line tugged at you,\nread just that line again, slower. That tug is worth listening to.", question: "Which line would you read a second time — and why that one?" },
+  { body: "Jehovah has watched people read these words on trains, in kitchens, in hospital chairs.\nHe sees where you are sitting right now, too.", question: "If He is watching you read this morning, what do you hope He notices?" },
+  { body: "You do not have to feel something every time.\nShowing up on the flat days is its own kind of faith — maybe the strongest kind.", question: "What brought you back to this page today, even if you cannot name it?" },
+  { body: "The text will still be here tonight.\nSome thoughts need a whole day of living before they make sense.", question: "What might today show you about what you just read?" },
+  { body: "A verse is a small thing to hold. Small enough to carry\ninto every room you walk into today.", question: "Where will you be today when you might need this one?" },
+  { body: "Whatever today holds, you did not walk into it alone or empty-handed.\nYou walked in with a word from Him.", question: "What would it change to remember that at three o'clock this afternoon?" },
+  { body: "He has been saying things like this for thousands of years,\nand this morning He said it to you.", question: "What would you say back, if it were just the two of you? It is." },
+  { body: "You are building something one morning at a time.\nNobody builds it faster than that. Not even the people who never left.", question: "What is one small way this morning felt different from a year ago?" }
+];
+
+const reflectBtn = document.getElementById('reflectBtn');
+const reflection = document.getElementById('reflection');
+const rbody = document.getElementById('rbody');
+const rquestion = document.getElementById('rquestion');
+
+const dayNum = Math.floor(Date.now() / 86400000);
+let bag = reflections.map((_, i) => i);
+for (let i = bag.length - 1; i > 0; i--) {
+  const j = (dayNum * 31 + i * 17) % (i + 1);
+  [bag[i], bag[j]] = [bag[j], bag[i]];
+}
+let bagPos = dayNum % bag.length;
+let lastShown = -1;
+
+const dailyTexts = {
+  '2026-08-16': { ref:'2 Cor. 2:9', t:'The obedience Paul asked that congregation to prove was not rule-keeping — it was whether they could forgive as completely as Jehovah does, and welcome someone home without holding back. Mercy, it turns out, is a command.', q:'Where is mercy being asked of you — or offered to you — today?' },
+  '2026-08-17': { ref:'Matt. 24:40', t:'Jesus said the difference between two people doing the same work can be invisible from the outside — it lives in the heart. What matters is not looking ready but being awake.', q:'What would today look like if you lived it awake?' },
+  '2026-08-18': { ref:'1 Cor. 16:14', t:'Not most things — everything. Love is not one item on the list; it is the way the whole list gets done.', q:'What ordinary task today could you do with love on purpose?' },
+  '2026-08-19': { ref:'Acts 20:28', t:'The men who shepherd the congregation were not voted in by popularity; the arrangement traces back to holy spirit. So when one of them shows you kindness, something bigger than kindness is happening.', q:'Who has shepherded you lately — and did you tell them what it meant?' },
+  '2026-08-20': { ref:'Isa. 65:17', t:'There is a day coming when the things that hurt most will not even rise in the mind — not suppressed, healed. Jehovah does not just promise to fix the future; He promises to quiet the past.', q:'Which memory would you most gladly hand over to that promise?' },
+  '2026-08-21': { ref:'Prov. 20:25', t:'Big promises made in a rush are snares; Jehovah prefers a small promise kept to a grand one abandoned. Growth that lasts is usually quiet and slow.', q:'What is one small, keepable promise for today?' },
+  '2026-08-22': { ref:'2 Tim. 1:8', t:'Confidence about faith is not a personality trait; it grows from conviction, and conviction grows from knowing why you believe. Timidity is not disqualifying — Timothy had it too.', q:'What is one reason for your hope you could say out loud?' },
+  '2026-08-23': { ref:'Luke 10:21', t:'Jesus looked at a hard territory and imperfect helpers and became overjoyed. Joy in sacred things is not naive — it is seeing what Jehovah is doing instead of only what people are doing.', q:'What is one thing Jehovah is clearly doing around you right now?' },
+  '2026-08-24': { ref:'Ps. 94:22', t:'A refuge does not make the storm stop; it gives you somewhere to stand while it passes. Jehovah does not always change the weather first — He holds you through it.', q:'What storm needs a standing place more than a solution today?' },
+  '2026-08-25': { ref:'Prov. 4:23', t:'The heart is called a source — what goes in eventually flows out as life. Guarding it is not strictness; it is protecting the spring everything else drinks from.', q:'What is one thing you could keep out of the spring this week?' },
+  '2026-08-26': { ref:'Matt. 5:44', t:'Praying for someone who hurt you does not excuse them; it frees you. It hands the ledger to the only Judge who reads hearts.', q:'Whose name is hardest to bring into a prayer — and could you try once?' },
+  '2026-08-27': { ref:'Ps. 5:4', t:'Jehovah’s standards are not coldness; they are what makes His friendship safe. A God who shrugged at harm could never be a refuge from it.', q:'How has one of His boundaries actually protected you?' },
+  '2026-08-28': { ref:'Ps. 145:16', t:'Jehovah gives the way an open hand gives — nothing measured out grudgingly. Generosity is a family trait; the more you receive, the more natural it becomes to pass along.', q:'Whose desire could your open hand satisfy today, even in a small way?' },
+  '2026-08-29': { ref:'Phil. 1:10', t:'Not everything urgent is important, and not everything important is loud. Making sure of the important things is a daily sorting, not a one-time decision.', q:'What is the one important thing today that must not lose to the urgent ones?' },
+  '2026-08-30': { ref:'Ps. 34:18', t:'He does not stand close to the strong and call to the broken from a distance. It is the other way around — crushed in spirit is exactly where He draws nearest.', q:'Can you let Him be close today without tidying up first?' },
+  '2026-08-31': { ref:'Ps. 56:8', t:'David asked Jehovah to collect his tears like something too precious to hit the ground. Nothing you have cried has been wasted or forgotten — it is all kept, recorded, counted.', q:'Which tears do you need to believe He kept?' },
+  '2026-09-01': { ref:'2 Cor. 13:5', t:'Checking your faith is not doubting it — it is maintenance, the way you check something you intend to keep. The examined faith is the one that lasts.', q:'What is one honest question you could ask your own faith this week?' },
+  '2026-09-02': { ref:'Num. 14:9', t:'Ten spies measured the giants against themselves; two measured them against Jehovah. Same land, same giants — the difference was the ruler used.', q:'What giant shrinks when measured against Him instead of against you?' },
+  '2026-09-03': { ref:'Gen. 18:25', t:'Abraham asked it like a question with an obvious answer — because it has one. Whatever is unresolved or unfair right now, the Judge of all the earth will do what is right. Every case.', q:'What injustice can you hand to that Judge today instead of carrying it?' },
+  '2026-09-04': { ref:'Prov. 3:32', t:'Jehovah offers something startling: close friendship. Not distant approval — closeness, with the plain-dealing. He is drawn to honesty more than polish.', q:'What would you tell Him today if you believed He wanted the unpolished version?' },
+  '2026-09-05': { ref:'Luke 10:17', t:'The seventy came back astonished at what happened when they simply went. Preparation matters, but the power showed up in the doing, not before it.', q:'What are you waiting to feel ready for that might only feel possible after you begin?' },
+  '2026-09-06': { ref:'Rev. 4:11', t:'Everything else about worship rests on this floor: He made all things, so He is worthy. On days when feelings run quiet, that fact still stands — and it is enough to stand on.', q:'What piece of creation could you actually stop and look at today?' },
+  '2026-09-07': { ref:'Heb. 11:6', t:'Faith is believing two things: that He is, and that He rewards the seeking. Not the finding — the seeking. The search itself is already being counted.', q:'What does your seeking look like this week — and can you trust it counts?' },
+  '2026-09-08': { ref:'2 Ki. 17:13', t:'The striking word is “kept” — warning after warning, prophet after prophet. That is not impatience; that is a God who refused to give up even on being ignored.', q:'What has He patiently repeated to you — and what would answering look like?' },
+  '2026-09-09': { ref:'2 Tim. 3:16', t:'The Bible calls itself beneficial — not just true, but useful. It is a tool meant to be picked up daily, not an heirloom kept on a shelf.', q:'What is one thing you actually need today that Scripture could hand you?' },
+  '2026-09-10': { ref:'Luke 21:20', t:'The Christians who survived Jerusalem’s end were the ones who acted on Jesus’ word while it was still inconvenient. Obedience with good timing is its own kind of faith.', q:'What direction are you glad you followed before you fully understood it?' },
+  '2026-09-11': { ref:'Luke 24:34', t:'Discouraged disciples were revived by one fact: he is alive. The resurrection is not only history — it is the guarantee attached to every other promise, including the ones about your people.', q:'Which promise feels sturdier when you remember the tomb was empty?' },
+  '2026-09-12': { ref:'1 Pet. 3:15', t:'Hope you can explain becomes hope you can hold. Putting reasons into words is not only for the one asking — it anchors the one hoping.', q:'Could you say, in one sentence, the reason for the hope you have?' },
+  '2026-09-13': { ref:'Job 12:12', t:'Long life turns experience into understanding — and the congregation is full of people who paid for their wisdom in years. Borrowing it costs only humility.', q:'Which gray head could you ask a real question this week?' },
+  '2026-09-19': { ref:'2 Cor. 2:7', t:'This verse was written about a real man in Corinth — removed from the congregation, repentant, on his way back. Paul’s worry was not whether he had suffered enough; it was that he might be swallowed up by excessive sadness. So the instruction was clear: forgive him, comfort him, reaffirm your love for him. That is the Bible’s own template for a return.', q:'Could you let yourself be comforted the way this verse commands others to comfort?' },
+  '2026-10-14': { ref:'Ps. 34:18', t:'Some days are heavy before they even begin. This text does not ask you to explain the weight or tidy it up — it simply states a location: close. Close to the brokenhearted. He was near before you woke up this morning, and He is not going anywhere tomorrow.', q:'Can you let Him stay close today, without needing the day to be okay?' }
+};
+
+const todayKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+let dailyShown = false;
+
+reflectBtn.addEventListener('click', () => {
+  const entry = dailyTexts[todayKey];
+  if (entry && !dailyShown) {
+    dailyShown = true;
+    document.querySelector('#reflection .rtitle').textContent = 'Today — ' + entry.ref;
+    rbody.textContent = entry.t;
+    rquestion.textContent = entry.q;
+    reflection.classList.add('show');
+    reflectBtn.textContent = 'Sit a little longer';
+    return;
+  }
+  document.querySelector('#reflection .rtitle').textContent = 'A quiet moment';
+  showFromBag();
+});
+
+function showFromBag(){
+  if (bagPos >= bag.length) {
+    for (let i = bag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [bag[i], bag[j]] = [bag[j], bag[i]];
+    }
+    bagPos = 0;
+    if (bag[0] === lastShown && bag.length > 1) {
+      [bag[0], bag[1]] = [bag[1], bag[0]];
+    }
+  }
+  const pick = reflections[bag[bagPos]];
+  lastShown = bag[bagPos];
+  bagPos++;
+  rbody.textContent = pick.body;
+  rquestion.textContent = pick.question;
+  reflection.classList.add('show');
+}
+
+const weeks = [
+  { start:'2026-08-10', title:'How to Remain Loyal When We Face Tests of Faith',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-june-2026/How-to-Remain-Loyal-When-We-Face-Tests-of-Faith/',
+    note:'Peter stayed without fully understanding. Questions and loyalty can live in the same heart. —John 6:68',
+    insight:'The men who knew Jesus best did not understand everything he said that day — and they stayed. Not because their questions were answered, but because of what they already knew for certain about who he was.\nThat is the whole pattern: anchor on what you know, and give your questions time. Even a lifelong Witness quoted in this article admits he still gets doubts — and researches them. Questions are not the opposite of faith. Leaving without asking them is.',
+    q:'What do you already know for certain — the thing your questions can safely hang from?',
+    mw:'Two baskets of figs — and the surprise is which one was good. The exiles, the ones living under discipline, were the good figs; the ones who looked fine back home were not. The sorting was never about who faced consequences. It was about who got honest.\nAnd notice: the exile came with a number on it — seventy years, not forever. Jehovah’s discipline always has an end date.',
+    mwq:'What would honest self-examination — the good-fig kind — look like this week?' },
+  { start:'2026-08-17', title:'How to Maintain Christian Friendships',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-june-2026/How-to-Maintain-Christian-Friendships/',
+    note:'Friendships between imperfect people take humility, patience, and kindness — the oil in the engine. —Col. 3:12',
+    insight:'Friendships in the congregation are built, not found — and they are built between imperfect people, which means friction is guaranteed and repair is the skill that matters.\nThe aim in any disagreement is not to establish who was right. It is to keep the friend. Some people will be quiet when you are outgoing, prickly when you are warm, distant when they are hurting. The qualities that carry it — humility, patience, kindness — are less like feelings and more like choices made early and often.',
+    q:'Who might need you to be patient with them this week — and who is quietly being patient with you?',
+    mw:'This week two prophets stand in the same courtyard saying opposite things in Jehovah’s name — and Hananiah, the false one, sounds more confident and far more pleasant. Truth is not always the loudest or most comfortable voice in the room.\nThe reading teaches discernment: weigh what you hear against what He has already said, not against how good it feels to hear it.',
+    mwq:'Which voices in your week deserve the Hananiah test?' },
+  { start:'2026-08-24', title:'Benefit From the Field Service Group Arrangement',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-june-2026/Benefit-From-the-Field-Service-Group-Arrangement/',
+    note:'Also this week: Jeremiah 29 — search for Him with all your heart, and He lets Himself be found. —Jer. 29:13',
+    insight:'The congregation is enormous — millions strong — but it is lived in small rooms: a handful of people who learn your name, notice your empty chair, and show up when things go wrong. Belonging is not a feeling you wait for. It mostly arrives through a door you keep walking through.\nAnd this week’s Jeremiah reading holds one of the warmest promises in Scripture: search for Him with all your heart, and He lets Himself be found. He also disciplines “to the proper degree” — measured, never more than needed, never forever.',
+    q:'What is one small room you could keep showing up to until it knows your name?',
+    mw:'Jehovah’s letter to the exiles is startling: build houses, plant gardens, live — right there in Babylon. Restoration was certain, but it had a date, and the faithful thing in the meantime was to live well where they stood.\nUnderneath it, the promise: search for me with all your heart, and I will let myself be found. And discipline “to the proper degree” — measured, purposeful, and then finished.',
+    mwq:'What does planting a garden right where you stand look like this season?' },
+  { start:'2026-08-31', title:'Pay Attention to How You Listen',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-june-2026/Pay-Attention-to-How-You-Listen/',
+    note:'Also this week: Jeremiah 31 — drawn back by loyal love, never dragged. —Jer. 31:3',
+    insight:'Some material at the meetings will sound familiar. This article says the difference is never in the words — it is in the listener. The same verse read a year apart lands on two different people, because you are not who you were the last time you heard it.\nListening, it turns out, is not passive. It is a form of worship you do with your posture, your preparation, and your silenced phone. And this week’s reading, Jeremiah 31, carries the line worth arriving early for: drawn back by loyal love. Drawn — never dragged.',
+    q:'Which familiar words might sound different now — because you are different now?',
+    mw:'Jeremiah 31 may be the tenderest chapter he ever wrote. Loved with an everlasting love — drawn, never dragged. Rachel, weeping for her children, is told to hold back her tears: there is a hope for your future; they will come back from the land of the enemy.\nAnd the new covenant closes on the line that changes everything: their sin I will remember no more.',
+    mwq:'Which of those three promises is yours to carry this week?' },
+  { start:'2026-09-07', title:'Learn From the Gibeonites',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-july-2026/Learn-From-the-Gibeonites/',
+    note:'They came in under the worst circumstances — and were never turned away. —Josh. 9',
+    insight:'The Gibeonites got in on a trick — worn-out sandals, moldy bread, a story that was not true. And when it came to light, Jehovah did not throw them out. He gave them work near his altar, defended them in war, and centuries later their descendants were still serving at the temple.\nScripture keeps making this point: how you arrived matters far less than that you stayed. The door they came through was crooked. The life they built inside was not.',
+    q:'What would it mean to stop relitigating how you got here — and just keep serving?',
+    mw:'With the Babylonians literally at the wall, Jehovah told Jeremiah to buy a field — sign the deed, seal it, store it in a clay jar so it would last a long time. Real estate in a doomed city. It was a promise in writing: houses and fields will again be bought in this land.\nHope, in Jehovah’s economy, is not a mood. It is a documented transaction — restoration put in writing before the ruin even finishes.',
+    mwq:'What “field” is He asking you to believe has a future?' },
+  { start:'2026-09-14', title:'Find Comfort in the Book of Isaiah',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-july-2026/Find-Comfort-in-the-Book-of-Isaiah/',
+    note:'“Comfort my people” is a command, not a suggestion. —Isa. 40:1',
+    insight:'Isaiah pivots hard partway through: after chapters of judgment, the first word of the new section is comfort — doubled, insisted on. And the tenderest line comes later: even if a mother could forget her nursing child, “I will not forget you.” Zion assumed she had been left behind. She was engraved on His palms the whole time.\nComfort in Isaiah is never vague. It is name-by-name, palm-of-the-hand specific.',
+    q:'Where have you assumed you were forgotten — in a place He says is engraved on His palms?',
+    mw:'Tucked into this week’s reading is a family nobody talks about much — the Rechabites. Generations earlier an ancestor asked them to live simply, and they were still quietly keeping that promise. Jehovah pointed at them in front of everyone and said: look, that is faithfulness — and promised their family would never lack a man to stand before Him.\nHe notices kept promises. Especially the unglamorous, decades-long kind that nobody applauds.',
+    mwq:'What quiet promise are you keeping that He has absolutely noticed?' },
+  { start:'2026-09-21', title:'Are You Getting to Know Jehovah Better?',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-july-2026/Are-You-Getting-to-Know-Jehovah-Better/',
+    note:'You know Him by collecting His small, specific kindnesses — until they add up to a character you trust.',
+    insight:'The picture on this article is Jeremiah being pulled out of a muddy cistern — and the detail worth finding is that Ebed-melech first lowered down worn-out rags, so the ropes would not cut under Jeremiah’s arms. Rescue, done Jehovah’s way, cares about how it feels, not just whether it happens.\nGetting to know Jehovah better is mostly this: collecting the small, specific kindnesses — in Scripture and in your own weeks — until they add up to a character you would trust with anything.',
+    q:'What rags-under-the-ropes kindness could you add to your file on Him this week?',
+    mw:'This week a king takes Jeremiah’s scroll, slices it apart column by column, and feeds it to the fire — and Jehovah’s answer is simply to dictate the whole thing again, with additions. You cannot burn His word out of existence. Every attempt to destroy it has only ever produced a longer edition.\nWhatever anyone tried to erase, He rewrote.',
+    mwq:'What has He rewritten in your life that once looked destroyed?' },
+  { start:'2026-09-28', title:'Help Others Come to Know Jehovah',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-july-2026/Help-Others-Come-to-Know-Jehovah/',
+    note:'Almost nobody meets Him through an argument. They meet Him through a changed life — and ask why.',
+    insight:'Before deciding this article is not for you yet, notice how people actually come to know Jehovah. Almost never through an argument. Almost always through a person whose life quietly changed — and they wanted to know why.\nWhich means your story, including the chapters you would rather skip, is already doing this work. The road back is itself a testimony. You do not have to be finished to be evidence.',
+    q:'Who is already watching what Jehovah is doing in you — whether you have said a word or not?',
+    mw:'Jerusalem falls in this week’s reading — and in the middle of a citywide catastrophe, the account pauses to deal with two individual names: Jeremiah, protected, and Ebed-melech, told personally that he would not perish, “because you trusted in me.”\nArmies were moving. A nation was ending. And He was keeping track of two people.',
+    mwq:'If He tracked individuals through the fall of a city, what does that say about this season of yours?' },
+  { start:'2026-10-05', title:'Resist Satan’s Tactics—Trust In Jehovah and In Jesus',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-august-2026/Resist-Satans-Tactics-Trust-In-Jehovah-and-In-Jesus/',
+    note:'Discouragement is a tactic, not a verdict.',
+    insight:'Satan’s oldest tactics are not spectacular. They are discouragement, isolation, and the whisper that you are disqualified. The article’s answer is not to argue with the feelings but to out-trust them — stay close to Jehovah, stay close to people, keep the routine that feeds you.\nA tactic only works while it goes unrecognized. Naming discouragement as strategy — his, not truth — takes most of its power away.',
+    q:'Which one has been loudest lately — discouragement, isolation, or disqualified — and what feeds its opposite?',
+    mw:'The dramatic part is over — Jerusalem has fallen — and now come the quiet, dangerous weeks after: a small remnant, hard choices, and voices pulling in every direction. The reading is honest about how much can still go wrong after the big event.\nSurviving the crisis is one thing. Walking faithfully through the aftermath is its own assignment — and Jehovah stayed present for that part too.',
+    mwq:'What does faithfulness look like in your aftermath weeks — the quiet, unglamorous ones?' },
+  { start:'2026-10-12', title:'You Can Win the Battle!',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-august-2026/You-Can-Win-the-Battle/',
+    note:'Some battles are fought entirely inside — and He fights them with you.',
+    insight:'The battle in this article is internal — the fight against feelings that corrode from the inside. And the honest fine print under the title: winning does not mean never feeling them. It means not letting them steer.\nSome weeks carry more weight than others. On the heavy ones, winning might just look like getting up, talking to Him, and letting the people who love you stay close. That counts. All of it counts.',
+    q:'On a heavy day, what does winning honestly look like for you — and can you let it be enough?',
+    mw:'The remnant asked Jeremiah to pray for direction and swore to obey whatever answer came. It took ten days — and it was not what they wanted, so they marched to Egypt anyway and called the true prophet a liar on the way out.\nThe reading’s quiet question: when I ask Him for direction, am I really asking — or looking for a co-signer? His counsel would have protected them. They just could not hear a no.',
+    mwq:'Where might He be saying “stay” when everything in you wants to run?' },
+  { start:'2026-10-19', title:'An Appeal on the Basis of Love',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-august-2026/An-Appeal-on-the-Basis-of-Love/',
+    note:'“No longer as a slave, but as a brother… a beloved one.” —Philem. 16',
+    insight:'This week the whole congregation studies the letter Paul wrote about a runaway. Onesimus left, and everything about the law said he should come back to punishment. Instead, Paul sent him home carrying a letter that said: receive him no longer as a slave, but as a brother — a beloved one. And Paul appealed on the basis of love, not authority, because he wanted the welcome to be freely given.\nThat is the pattern Scripture sets for returns. Not probation. Welcome. Read this one slowly — it was written about someone walking your road.',
+    q:'What would it change to believe the welcome being prepared for you is Philemon-shaped?',
+    mw:'One short chapter this week is a private message to a single tired man. Baruch said out loud, “Woe to me… I am weary” — and Jehovah heard it, answered it personally, and promised him his life. No rebuke for the exhaustion. Just an honest recalibration and a guarantee.\nHe answers weariness. It is allowed in the conversation.',
+    mwq:'What would you tell Him if weariness were allowed? It is.' },
+  { start:'2026-10-26', title:'Cherish “the Privilege of Fearlessly Rendering Sacred Service”',
+    url:'https://www.jw.org/en/library/magazines/watchtower-study-august-2026/Cherish-the-Privilege-of-Fearlessly-Rendering-Sacred-Service/',
+    note:'Worship is not an obligation resumed — it is a privilege restored.',
+    insight:'The key word in this title is privilege. Sacred service is framed not as a duty you owe but as an honor you hold — something to cherish, the way you hold on to a thing you almost lost.\nNobody cherishes worship quite like someone who spent time without it. What feels routine to people who never left can feel like a returned treasure to you. That is not a deficit. It might be the most valuable perspective in the room.',
+    q:'What part of worship do you cherish now precisely because you know what its absence feels like?',
+    mw:'This week’s judgment is against Moab — a longtime enemy — and in the middle of it, Jehovah says something startling: “I will wail over Moab.” He takes no pleasure in it. And the chapter closes with a promise to bring back even Moab’s captives in the end.\nIf His mercy keeps a forwarding address for Moab, it does not lose track of anyone.',
+    mwq:'What does it mean that even His judgments end in “I will bring back”?' }
+];
+
+let currentWeek = null;
+(function(){
+  const el = document.getElementById('weektheme');
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  for (const w of weeks) {
+    const s = new Date(w.start + 'T00:00:00');
+    const e = new Date(s); e.setDate(e.getDate() + 7);
+    if (today >= s && today < e) {
+      currentWeek = w;
+      el.textContent = '“' + w.title + '” — ' + w.note;
+      el.style.display = 'block';
+      if (w.url) {
+        document.getElementById('wtlink').href = w.url;
+        document.getElementById('wtsub').textContent = '“' + w.title + '”';
+      }
+      break;
+    }
+  }
+})();
+
+const lenses = [
+  { body: "Somewhere in this week's material there is one sentence that will sound like it was written about you.\nYour only job is to find it.", question: "When you find it — what will you do with it?" },
+  { body: "Read for one person this week: someone in the article, a verse, an example\nwho reminds you of yourself. They usually hide in plain sight.", question: "What happened to them next?" },
+  { body: "Notice which paragraph you slow down on without meaning to.\nThat is usually the one that came looking for you.", question: "What is it touching that the other paragraphs did not?" },
+  { body: "Every study has a question underneath it that it never asks out loud.\nSee if you can hear the quiet one under this week's.", question: "How would you answer it — honestly, not correctly?" },
+  { body: "You do not have to agree with every line to be fed by the meal.\nTake what is yours this week. Leave the rest on the table for now.", question: "Which part is clearly yours?" },
+  { body: "Somewhere in there is a scripture you have read before —\nbut you are not the same person who read it last time.", question: "What does it say now that it could not say then?" },
+  { body: "Watch for the moment in the meeting when someone comments\nand you think: me too. That is the brotherhood working.", question: "Who said something this week that could have come from your own heart?" },
+  { body: "This week's material was written months ago by people who never met you.\nAnd yet — watch what it knows.", question: "Where did it find you this week?" }
+];
+
+const weekBtn = document.getElementById('weekBtn');
+const wreflection = document.getElementById('wreflection');
+const wbody = document.getElementById('wbody');
+const wquestion = document.getElementById('wquestion');
+let wbag = lenses.map((_, i) => i);
+for (let i = wbag.length - 1; i > 0; i--) {
+  const j = (dayNum * 13 + i * 7) % (i + 1);
+  [wbag[i], wbag[j]] = [wbag[j], wbag[i]];
+}
+let wbagPos = dayNum % wbag.length;
+let wlastShown = -1;
+
+function showLens(titleEl, bodyEl, qEl, panel){
+  if (wbagPos >= wbag.length) {
+    for (let i = wbag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [wbag[i], wbag[j]] = [wbag[j], wbag[i]];
+    }
+    wbagPos = 0;
+    if (wbag[0] === wlastShown && wbag.length > 1) {
+      [wbag[0], wbag[1]] = [wbag[1], wbag[0]];
+    }
+  }
+  const pick = lenses[wbag[wbagPos]];
+  wlastShown = wbag[wbagPos];
+  wbagPos++;
+  titleEl.textContent = 'Read it this way';
+  bodyEl.textContent = pick.body;
+  qEl.textContent = pick.question;
+  panel.classList.add('show');
+}
+
+let insightShown = false;
+weekBtn.addEventListener('click', () => {
+  if (currentWeek && currentWeek.insight && !insightShown) {
+    insightShown = true;
+    document.getElementById('wttitle').textContent = 'For this week’s article';
+    wbody.textContent = currentWeek.insight;
+    wquestion.textContent = currentWeek.q;
+    wreflection.classList.add('show');
+    weekBtn.textContent = 'Another way to read it';
+    return;
+  }
+  showLens(document.getElementById('wttitle'), wbody, wquestion, wreflection);
+});
+
+const mwBtn = document.getElementById('mwBtn');
+const mwreflection = document.getElementById('mwreflection');
+const mwbody = document.getElementById('mwbody');
+const mwquestion = document.getElementById('mwquestion');
+let mwShown = false;
+mwBtn.addEventListener('click', () => {
+  if (currentWeek && currentWeek.mw && !mwShown) {
+    mwShown = true;
+    document.getElementById('mwtitle').textContent = 'For this week’s reading';
+    mwbody.textContent = currentWeek.mw;
+    mwquestion.textContent = currentWeek.mwq;
+    mwreflection.classList.add('show');
+    mwBtn.textContent = 'Another way to read it';
+    return;
+  }
+  showLens(document.getElementById('mwtitle'), mwbody, mwquestion, mwreflection);
+});
+
+const starters = [
+  { key:'Scared', open:'Jehovah, I feel exposed today. Be my shelter for the next hour — that is all I am asking for right now.',
+    verse:'The name of Jehovah is a strong tower. Into it the righteous one runs and receives protection.', ref:'Proverbs 18:10' },
+  { key:'Missing him', open:'Jehovah, you know who I am missing. You saw every one of those days. Hold this ache with me for a minute.',
+    verse:'Collect my tears in your skin bottle. Are they not recorded in your book?', ref:'Psalm 56:8' },
+  { key:'Grateful', open:'Jehovah, before I ask for anything — thank you. For today, for the people who stayed, for the way back.',
+    verse:'Let me praise Jehovah; may I never forget all that he has done.', ref:'Psalm 103:2' },
+  { key:'Ashamed', open:'Jehovah, I keep replaying things I cannot undo. Help me believe you when you say you forgive in a large way.',
+    verse:'Let the wicked one return to Jehovah, who will have mercy on him… for he will forgive in a large way.', ref:'Isaiah 55:7' },
+  { key:'Overwhelmed', open:'Jehovah, it is a lot today. I am handing you the pile — help me carry just the next thing.',
+    verse:'Throw your burden on Jehovah, and he will sustain you.', ref:'Psalm 55:22' },
+  { key:'Hopeful', open:'Jehovah, something new is starting and I can feel it. Walk with me into it — excited and scared at the same time.',
+    verse:'I well know the thoughts that I am thinking toward you… to give you a future and a hope.', ref:'Jeremiah 29:11' },
+  { key:'Lonely', open:'Jehovah, the apartment is quiet tonight. Remind me that quiet and alone are not the same thing when you are near.',
+    verse:'Jehovah is close to the brokenhearted; he saves those who are crushed in spirit.', ref:'Psalm 34:18' },
+  { key:'Angry', open:'Jehovah, I am angry and I do not want to pretend I am not. You can handle my honest heart — so here it is.',
+    verse:'Be agitated, but do not sin. Have your say in your heart, upon your bed, and keep silent.', ref:'Psalm 4:4' }
+];
+
+const chipsEl = document.getElementById('chips');
+const prayerEl = document.getElementById('prayer');
+starters.forEach((s) => {
+  const b = document.createElement('button');
+  b.className = 'chip';
+  b.textContent = s.key;
+  b.type = 'button';
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('pOpen').textContent = s.open;
+    document.getElementById('pVerse').textContent = '“' + s.verse + '”';
+    document.getElementById('pRef').textContent = s.ref;
+    prayerEl.classList.add('show');
+  });
+  chipsEl.appendChild(b);
+});
+
+/* ---------- Stillwater ---------- */
+const stTech = {
+  coherent: { note: 'Steady 5\u20135 \u2014 the everyday one. Calms without making you drowsy.',
+    phases: [ { t: 'Breathe in\u2026', d: 5, sc: 1.35 }, { t: 'Breathe out\u2026', d: 5, sc: 1 } ] },
+  box: { note: 'Box 4\u20134\u20134\u20134 \u2014 for a racing mind. The counting gives it a job.',
+    phases: [ { t: 'Breathe in\u2026', d: 4, sc: 1.35 }, { t: 'Hold\u2026', d: 4, sc: 1.35 }, { t: 'Breathe out\u2026', d: 4, sc: 1 }, { t: 'Hold\u2026', d: 4, sc: 1 } ] },
+  relax: { note: 'Sleepy 4\u20137\u20138 \u2014 for bed. The long exhale tells your body it\u2019s safe.',
+    phases: [ { t: 'Breathe in\u2026', d: 4, sc: 1.35 }, { t: 'Hold\u2026', d: 7, sc: 1.35 }, { t: 'Slow breath out\u2026', d: 8, sc: 1 } ] }
+};
+let stSel = 'coherent', stMin = 3, stRunning = false;
+let stPhaseTO = null, stTickInt = null, stEndAt = 0;
+const stOrb = document.getElementById('stOrb');
+const stPhaseEl = document.getElementById('stPhase');
+const stTimeEl = document.getElementById('stTime');
+const stGo = document.getElementById('stGo');
+
+document.querySelectorAll('#stTechChips .chip').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#stTechChips .chip').forEach(c => c.classList.remove('active'));
+    b.classList.add('active');
+    stSel = b.dataset.tech;
+    document.getElementById('stTechNote').textContent = stTech[stSel].note;
+    if (stRunning) stStop('Ready when you are');
+  });
+});
+document.querySelectorAll('#stDurChips .chip').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#stDurChips .chip').forEach(c => c.classList.remove('active'));
+    b.classList.add('active');
+    stMin = parseInt(b.dataset.min, 10);
+  });
+});
+
+function stStop(msg) {
+  stRunning = false;
+  narStop();
+  clearTimeout(stPhaseTO);
+  clearInterval(stTickInt);
+  stOrb.style.transition = 'transform 1s ease';
+  stOrb.style.transform = 'scale(1)';
+  stPhaseEl.textContent = msg;
+  stTimeEl.textContent = '';
+  stGo.textContent = 'Begin';
+}
+
+function stRunPhase(i) {
+  if (!stRunning) return;
+  const ph = stTech[stSel].phases[i % stTech[stSel].phases.length];
+  stPhaseEl.textContent = ph.t;
+  narSpeak(ph.t, 0.95);
+  stOrb.style.transition = 'transform ' + ph.d + 's ease-in-out';
+  stOrb.style.transform = 'scale(' + ph.sc + ')';
+  stPhaseTO = setTimeout(() => stRunPhase(i + 1), ph.d * 1000);
+}
+
+stGo.addEventListener('click', () => {
+  if (stRunning) { stStop('Ready when you are'); return; }
+  narUnlock();
+  stRunning = true;
+  stGo.textContent = 'Stop';
+  stEndAt = Date.now() + stMin * 60000;
+  stTickInt = setInterval(() => {
+    const left = Math.max(0, Math.round((stEndAt - Date.now()) / 1000));
+    stTimeEl.textContent = String(Math.floor(left / 60)) + ':' + String(left % 60).padStart(2, '0') + ' left';
+    if (left <= 0) {
+      stStop('Still. Well done.');
+      narSpeak('Still. Well done.');
+    }
+  }, 500);
+  stRunPhase(0);
+});
+
+
+/* ---------- Narrator: ElevenLabs via /api, browser voice fallback ---------- */
+const nar = { ready: false, voiceId: null, cache: new Map(), el: null, on: true, browserVoice: null };
+
+function narAudioEl() {
+  if (!nar.el) { nar.el = new Audio(); nar.el.preload = 'auto'; }
+  return nar.el;
+}
+// Must run inside a user tap: silent clip + silent utterance unlock later playback on mobile.
+function narUnlock() {
+  try {
+    const el = narAudioEl();
+    el.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+    el.play().catch(() => {});
+    if ('speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance(' ');
+      u.volume = 0;
+      speechSynthesis.speak(u);
+    }
+  } catch (e) {}
+}
+(function pickBrowserVoice() {
+  if (!('speechSynthesis' in window)) return;
+  const pick = () => {
+    const vs = speechSynthesis.getVoices();
+    if (!vs.length) return;
+    const prefs = ['Samantha', 'Google US English', 'Karen', 'Moira', 'Daniel', 'Microsoft Aria'];
+    let c = null;
+    for (const pn of prefs) { c = vs.find(v => v.name.includes(pn)); if (c) break; }
+    nar.browserVoice = c || vs.find(v => v.lang && v.lang.startsWith('en')) || vs[0];
+  };
+  pick();
+  speechSynthesis.addEventListener('voiceschanged', pick);
+})();
+function narBrowser(text, rate) {
+  if (!('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if (nar.browserVoice) u.voice = nar.browserVoice;
+    u.rate = rate || 0.85;
+    u.pitch = 0.95;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+async function narFetch(text) {
+  const key = nar.voiceId + '|' + text;
+  if (nar.cache.has(key)) return nar.cache.get(key);
+  const r = await fetch('/api/tts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ voiceId: nar.voiceId, text })
+  });
+  if (!r.ok) throw new Error('tts ' + r.status);
+  const b = await r.blob();
+  const u = URL.createObjectURL(b);
+  nar.cache.set(key, u);
+  return u;
+}
+async function narSpeak(text, rate) {
+  if (!text || !nar.on) return;
+  if (!nar.ready || !nar.voiceId) { narBrowser(text, rate); return; }
+  try {
+    const el = narAudioEl();
+    el.pause();
+    const u = await narFetch(text);
+    el.src = u;
+    await el.play();
+  } catch (e) { narBrowser(text, rate); }
+}
+async function narPrefetch(lines) {
+  if (!nar.ready || !nar.voiceId) return;
+  const q = [...new Set(lines)];
+  const w = async () => { while (q.length) { const l = q.shift(); try { await narFetch(l); } catch (e) {} } };
+  await Promise.all([w(), w()]);
+}
+function narStop() {
+  try {
+    if (nar.el) nar.el.pause();
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+  } catch (e) {}
+}
+// Discover the premium voice (works only once deployed with the server key; falls back silently here)
+(function narInit() {
+  fetch('/api/health')
+    .then(r => (r.ok ? r.json() : null))
+    .then(d => { if (d && d.elevenlabs) { nar.ready = true; return fetch('/api/voices'); } return null; })
+    .then(r => (r && r.ok ? r.json() : null))
+    .then(d => {
+      if (!d) return;
+      const vs = d.voices || [];
+      const sel = document.getElementById('nVoice');
+      vs.forEach(v => {
+        const o = document.createElement('option');
+        o.value = v.voice_id;
+        o.textContent = v.name;
+        sel.appendChild(o);
+      });
+      if (vs.length) {
+        nar.voiceId = vs[0].voice_id;
+        sel.style.display = 'block';
+        sel.addEventListener('change', () => { nar.voiceId = sel.value; });
+        document.getElementById('nStatus').textContent = 'Close your eyes \u2014 the voice does the remembering.';
+      }
+    })
+    .catch(() => {});
+})();
+const nVoiceOn = document.getElementById('nVoiceOn');
+nVoiceOn.addEventListener('click', () => {
+  nar.on = !nar.on;
+  nVoiceOn.classList.toggle('active', nar.on);
+  nVoiceOn.textContent = nar.on ? 'Voice on' : 'Voice off';
+  if (!nar.on) narStop();
+});
+document.getElementById('nSample').addEventListener('click', () => {
+  narUnlock();
+  narSpeak('Welcome to Stillwater. Settle in, and let the day soften.');
+});
+
+/* ---------- Guided sessions ---------- */
+const guidedScripts = {
+  bodyscan: { name: 'Body scan', min: 10, tag: 'Ten minutes, head to toe. Nothing to fix \u2014 just notice.',
+    prompts: [
+      'Settle into your seat. Let your hands rest wherever they land.',
+      'Take three slow breaths. Longer out than in.',
+      'Bring your attention to the top of your head. Just notice it.',
+      'Let your forehead soften. The space between your eyebrows.',
+      'Unclench your jaw. Let your tongue rest away from the roof of your mouth.',
+      'Notice your neck and shoulders. On the next exhale, let them drop.',
+      'Your arms, down to the fingertips. Feel their weight.',
+      'Your chest, rising and falling. No need to change the rhythm.',
+      'Your stomach. Let it be soft. It doesn\u2019t have to hold anything.',
+      'Your lower back, your hips. The places that carry the day.',
+      'Your legs. Heavy, resting, done for now.',
+      'Your feet on the floor. The exact points of contact.',
+      'Now hold the whole body in awareness at once, like a single breath.',
+      'If the mind wandered, that\u2019s the practice working. Come back once more.',
+      'Take one deeper breath. Let it go slowly.'
+    ] },
+  winddown: { name: 'Evening wind-down', min: 8, tag: 'Set the day down before you set yourself down.',
+    prompts: [
+      'Find a comfortable position. Dim what you can dim.',
+      'Breathe in through the nose. And let the exhale be long and unhurried.',
+      'Think of the day as something you carried. You can set it down now.',
+      'Whatever is unfinished will still be there tomorrow. It keeps.',
+      'Recall one moment from today that was good. Small counts.',
+      'Sit with that moment for a few breaths. Let it be enough.',
+      'Now let the mind\u2019s list-making slow. No item needs you tonight.',
+      'Feel the weight of your body being held up. You don\u2019t have to hold it.',
+      'Each exhale, a little heavier. A little slower.',
+      'There is nothing left to do in this moment. That\u2019s the truth of it.',
+      'Rest in that for the last stretch. Just breath, and quiet.'
+    ] },
+  reset: { name: 'Midday reset', min: 3, tag: 'Three minutes. A door you can close.',
+    prompts: [
+      'Sit back. Feet flat. Eyes closed or lowered.',
+      'One slow breath in. And out. That\u2019s the threshold. You\u2019ve stepped away.',
+      'Name silently what you just came from. Then let it stand over there.',
+      'Notice your shoulders and hands, where the last hour is stored. Soften.',
+      'Three breaths, counting only the exhales. One. Two. Three.',
+      'Ask: what actually matters in the next hour? Just one thing.',
+      'Hold that one thing lightly. Everything else can wait its turn.',
+      'One more full breath. When you open your eyes, begin from stillness.'
+    ] }
+};
+const SG_CLOSE = 'Session complete. Carry the quiet with you.';
+const fmtT = (sec) => Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+
+const sgCard = document.getElementById('sgCard');
+const sgName = document.getElementById('sgName');
+const sgPromptEl = document.getElementById('sgPrompt');
+const sgTimeEl = document.getElementById('sgTime');
+const sgPauseBtn = document.getElementById('sgPause');
+const sgEndBtn = document.getElementById('sgEnd');
+let sg = null;
+
+const sgListEl = document.getElementById('sgList');
+const sgDots = ['var(--moss)', 'var(--orchid)', 'var(--rose)'];
+Object.entries(guidedScripts).forEach(([key, g], i) => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'wlink wbtn';
+  b.innerHTML = '<span class="dot" style="background:' + sgDots[i % 3] + '"></span>' +
+    '<span><span class="t">' + g.name + '</span><br><span class="s">' + g.tag + '</span></span>' +
+    '<span class="arrow" style="font-size:13px">' + g.min + ' min</span>';
+  b.addEventListener('click', () => sgStart(key));
+  sgListEl.appendChild(b);
+});
+
+function sgStart(key) {
+  narUnlock();
+  sgReset();
+  const g = guidedScripts[key];
+  sg = { key, elapsed: 0, per: Math.max(1, Math.floor((g.min * 60) / g.prompts.length)), idx: -1, paused: false, done: false, int: null };
+  sgName.textContent = g.name;
+  sgCard.style.display = 'block';
+  narPrefetch([...g.prompts, SG_CLOSE]);
+  sgCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  sg.int = setInterval(sgTick, 1000);
+  sgTick();
+}
+function sgTick() {
+  if (!sg || sg.paused || sg.done) return;
+  const g = guidedScripts[sg.key];
+  const total = g.min * 60;
+  const idx = Math.min(Math.floor(sg.elapsed / sg.per), g.prompts.length - 1);
+  if (idx !== sg.idx) {
+    sg.idx = idx;
+    sgPromptEl.textContent = g.prompts[idx];
+    narSpeak(g.prompts[idx]);
+  }
+  sgTimeEl.textContent = fmtT(sg.elapsed) + ' / ' + fmtT(total);
+  if (sg.elapsed >= total) {
+    sg.done = true;
+    clearInterval(sg.int);
+    narStop();
+    sgPromptEl.textContent = SG_CLOSE;
+    narSpeak(SG_CLOSE);
+    sgTimeEl.textContent = '';
+    sgPauseBtn.style.display = 'none';
+    sgEndBtn.textContent = 'Back';
+    return;
+  }
+  sg.elapsed++;
+}
+sgPauseBtn.addEventListener('click', () => {
+  if (!sg || sg.done) return;
+  sg.paused = !sg.paused;
+  sgPauseBtn.textContent = sg.paused ? 'Resume' : 'Pause';
+  if (sg.paused) { narStop(); sgPromptEl.textContent = 'Paused \u2014 take your time.'; }
+  else {
+    const g = guidedScripts[sg.key];
+    sgPromptEl.textContent = g.prompts[sg.idx];
+    narSpeak(g.prompts[sg.idx]);
+  }
+});
+sgEndBtn.addEventListener('click', () => { sgReset(); });
+function sgReset() {
+  if (sg && sg.int) clearInterval(sg.int);
+  narStop();
+  sg = null;
+  sgCard.style.display = 'none';
+  sgPauseBtn.style.display = 'block';
+  sgPauseBtn.textContent = 'Pause';
+  sgEndBtn.textContent = 'End';
+  sgPromptEl.textContent = '';
+  sgTimeEl.textContent = '';
+}
+
+document.getElementById('hdBreatheBtn').addEventListener('click', () => {
+  document.querySelector('.tab[data-tab="still"]').click();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+/* ---------- Hard Days ---------- */
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+const hdWaveBtn = document.getElementById('hdWaveBtn');
+const hdWave = document.getElementById('hdWave');
+hdWaveBtn.addEventListener('click', () => {
+  hdWave.classList.add('show');
+  hdWaveBtn.textContent = 'You\u2019re already riding it';
+});
+
+const hdTimerBtn = document.getElementById('hdTimerBtn');
+const hdTimerDisplay = document.getElementById('hdTimerDisplay');
+const hdTimerDone = document.getElementById('hdTimerDone');
+let hdInt = null;
+hdTimerBtn.addEventListener('click', () => {
+  clearInterval(hdInt);
+  let remain = 20 * 60;
+  hdTimerDone.style.display = 'none';
+  hdTimerDisplay.style.display = 'block';
+  const tick = () => {
+    const mm = String(Math.floor(remain / 60)).padStart(2, '0');
+    const ss = String(remain % 60).padStart(2, '0');
+    hdTimerDisplay.textContent = mm + ':' + ss;
+    if (remain <= 0) {
+      clearInterval(hdInt);
+      hdTimerDisplay.style.display = 'none';
+      hdTimerDone.style.display = 'block';
+      return;
+    }
+    remain--;
+  };
+  tick();
+  hdInt = setInterval(tick, 1000);
+  hdTimerBtn.textContent = 'Restart 20 minutes';
+});
+
+const hdActs = {
+  room: 'Cravings are geographic. Leave the room it found you in \u2014 kitchen to porch counts. It usually stays behind.',
+  water: 'Cold water on your face and wrists, thirty seconds. It interrupts the loop \u2014 no skill required.',
+  eat: 'A real thing: protein, fruit, bread. A blood-sugar dip wears a craving costume constantly.',
+  walk: 'Movement starves it. There is a whole tab of walks one tap away.'
+};
+const hdActText = document.getElementById('hdActText');
+const hdWalkBtn = document.getElementById('hdWalkBtn');
+document.querySelectorAll('.hd-act').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.hd-act').forEach(c => c.classList.remove('active'));
+    b.classList.add('active');
+    hdActText.textContent = hdActs[b.dataset.act];
+    hdActText.style.display = 'block';
+    hdWalkBtn.style.display = b.dataset.act === 'walk' ? 'block' : 'none';
+  });
+});
+hdWalkBtn.addEventListener('click', () => {
+  document.querySelector('.tab[data-tab="out"]').click();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+document.getElementById('hdMeetingBtn').addEventListener('click', () => {
+  document.querySelector('.tab[data-tab="out"]').click();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+const hdHaltData = [
+  { key: 'Hungry', t: 'When did you last eat? Handle that first \u2014 real food, not just something. Then see how much craving is actually left.' },
+  { key: 'Angry', t: 'Anger is fuel with nowhere to go. Give it somewhere: walk hard, write it out unsent, or say it to Him unedited \u2014 Psalm 4:4 style. Then reassess.' },
+  { key: 'Lonely', t: 'The craving says a drink is company. It is the opposite \u2014 the loneliest room there is. Text a person instead. Two words is enough to start.' },
+  { key: 'Tired', t: 'Tired brains lose fights that rested brains win without trying. This might just be bedtime in a costume. Go to sleep \u2014 the craving does not follow you there.' }
+];
+const hdHaltEl = document.getElementById('hdHalt');
+const hdHaltText = document.getElementById('hdHaltText');
+hdHaltData.forEach(hh => {
+  const b = document.createElement('button');
+  b.className = 'chip';
+  b.type = 'button';
+  b.textContent = hh.key;
+  b.addEventListener('click', () => {
+    hdHaltEl.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    b.classList.add('active');
+    hdHaltText.textContent = hh.t;
+    hdHaltText.style.display = 'block';
+  });
+  hdHaltEl.appendChild(b);
+});
+
+const hdReasons = document.getElementById('hdReasons');
+const hdSavedNote = document.getElementById('hdSavedNote');
+const savedReasons = lsGet('dragonfly-reasons');
+if (savedReasons) { hdReasons.value = savedReasons; }
+document.getElementById('hdSaveReasons').addEventListener('click', () => {
+  lsSet('dragonfly-reasons', hdReasons.value);
+  hdSavedNote.style.display = 'block';
+  setTimeout(() => { hdSavedNote.style.display = 'none'; }, 2500);
+});
+
+const hardMoments = [
+  { key: 'I don\u2019t want to go tonight', title: 'About tonight',
+    body: 'You do not have to decide about the meeting right now. Decide about getting dressed. Then decide again at the door.\nAnd the smallest version still counts: Zoom, camera off, from the couch.',
+    verse: '\u201cCome to me, all you who are toiling and loaded down, and I will refresh you\u2026 my load is light.\u201d', ref: 'Matthew 11:28-30',
+    step: 'Smallest step: just open the Zoom link. That is attendance.' },
+  { key: 'Someone was cold to me', title: 'About the coldness',
+    body: 'That stings, and the sting is real \u2014 do not talk yourself out of it. But their coldness is about where they are in their process. It is not a verdict on your worth or your welcome.',
+    verse: '\u201cEven if my own father and mother abandon me, Jehovah himself will take me in.\u201d', ref: 'Psalm 27:10',
+    step: 'Name one person who was warm last time. Sit near them next time.' },
+  { key: 'This is taking too long', title: 'About the wait',
+    body: 'The exile had a number on it. So does this. Waiting inside a promise is not the same as waiting in the dark \u2014 even when they feel identical at 11 PM.',
+    verse: '\u201cEven if it should delay, keep in expectation of it! For it will without fail come true. It will not be late!\u201d', ref: 'Habakkuk 2:3',
+    step: 'Measure backward six months instead of forward. Look how far.' },
+  { key: 'I miss my old life', title: 'About the old life',
+    body: 'Some of it really was fun \u2014 you are allowed to grieve it. But memory edits out the mornings. Make it show you the whole reel, not the highlights.',
+    verse: '\u201cA day in your courtyards is better than a thousand anywhere else.\u201d', ref: 'Psalm 84:10',
+    step: 'Write down one thing the old life actually cost. Just one.' },
+  { key: 'I\u2019m doubting', title: 'About the doubts',
+    body: 'Questions and loyalty can live in the same heart \u2014 Peter proved it. Doubt is not the exit. Leaving without asking is.',
+    verse: '\u201cLord, whom shall we go away to? You have sayings of everlasting life.\u201d', ref: 'John 6:68',
+    step: 'Write the question down and ask someone this week. Unasked is the only dangerous kind.' },
+  { key: 'I slipped', title: 'About the slip',
+    body: 'A slip is a page, not the book. And the most dangerous part is not the drink \u2014 it is the shame spiral after it, the one that says disappear. Do not disappear.',
+    verse: '\u201cDo not rejoice over me, O my enemy. Although I have fallen, I will rise; although I dwell in darkness, Jehovah will be my light.\u201d', ref: 'Micah 7:8',
+    step: 'Tell one person today. Shame dies in daylight \u2014 your brother\u2019s number is one card down.' },
+  { key: 'I almost didn\u2019t open this', title: 'But you did',
+    body: 'On some days, opening this page is the entire win \u2014 and it counts in full. Nobody is grading the size of your steps. He is just glad you came.',
+    verse: '\u201cFor who has despised the day of small things?\u201d', ref: 'Zechariah 4:10',
+    step: 'Nothing else is required of you today.' },
+  { key: 'Today is just heavy', title: 'For the heavy ones',
+    body: 'Then lower the bar to the floor: water, a shower, one text, sleep. Heavy days are not for climbing. They are for being carried.',
+    verse: '\u201cEven to your old age I will be the same; and until your hair is gray I will keep bearing you\u2026 I will carry you and rescue you.\u201d', ref: 'Isaiah 46:4',
+    step: 'Pick exactly one: water, shower, one text, sleep.' }
+];
+
+const hdChipsEl = document.getElementById('hdChips');
+const hdMoment = document.getElementById('hdMoment');
+hardMoments.forEach(hm => {
+  const b = document.createElement('button');
+  b.className = 'chip';
+  b.type = 'button';
+  b.textContent = hm.key;
+  b.addEventListener('click', () => {
+    hdChipsEl.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('hdmTitle').textContent = hm.title;
+    document.getElementById('hdmBody').textContent = hm.body;
+    document.getElementById('hdmVerse').textContent = hm.verse;
+    document.getElementById('hdmRef').textContent = hm.ref;
+    document.getElementById('hdmStep').textContent = hm.step;
+    hdMoment.classList.add('show');
+  });
+  hdChipsEl.appendChild(b);
+});
+</script>
+</body>
+</html>
