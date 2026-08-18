@@ -1,12 +1,11 @@
-// GET /api/voices — collection voices when configured AND non-empty,
-// otherwise all My Voices. Never returns an empty list if v1 has voices.
+// GET /api/voices — dragonfly-collection voices; falls back to all My Voices
+// if the collection is empty or the query fails. Never returns an empty list.
 module.exports = async (req, res) => {
   if (req.method !== "GET") return res.status(405).json({ error: "GET only" });
   const key = process.env.ELEVENLABS_API_KEY;
   if (!key) return res.status(503).json({ error: "ElevenLabs key not configured" });
   const cid = process.env.ELEVENLABS_COLLECTION_ID;
   const map = (d) => (d.voices || []).map((v) => ({ voice_id: v.voice_id, name: v.name }));
-
   try {
     if (cid) {
       const r2 = await fetch(
@@ -20,7 +19,6 @@ module.exports = async (req, res) => {
           return res.status(200).json({ voices });
         }
       }
-      // empty or errored -> fall through to full list
     }
     const r1 = await fetch("https://api.elevenlabs.io/v1/voices", {
       headers: { "xi-api-key": key },
