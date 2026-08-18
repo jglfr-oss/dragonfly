@@ -6,6 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#FFFBF4">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<meta name="apple-mobile-web-app-title" content="Dragonfly">
 <title>Dragonfly</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -247,6 +250,7 @@
       <h1>Dragonfly</h1>
       <p class="greet" id="greet">Good morning</p>
       <p class="datebar" id="datebar"></p>
+      <p id="meetnote" style="display:none;margin-top:10px;font-size:14px;color:var(--fern);font-weight:600"></p>
     </header>
 
     <section class="card">
@@ -1042,6 +1046,7 @@ document.querySelectorAll('#stTechChips .chip').forEach(b => {
     b.classList.add('active');
     stSel = b.dataset.tech;
     document.getElementById('stTechNote').textContent = stTech[stSel].note;
+    lsSet('dragonfly-breath-tech', stSel);
     if (stRunning) stStop('Ready when you are');
   });
 });
@@ -1050,6 +1055,7 @@ document.querySelectorAll('#stDurChips .chip').forEach(b => {
     document.querySelectorAll('#stDurChips .chip').forEach(c => c.classList.remove('active'));
     b.classList.add('active');
     stMin = parseInt(b.dataset.min, 10);
+    lsSet('dragonfly-breath-min', String(stMin));
   });
 });
 
@@ -1192,8 +1198,11 @@ function narStop() {
       });
       if (vs.length) {
         nar.voiceId = vs[0].voice_id;
+        const savedVoice = lsGet('dragonfly-voice');
+        if (savedVoice && vs.some(v => v.voice_id === savedVoice)) nar.voiceId = savedVoice;
+        sel.value = nar.voiceId;
         sel.style.display = 'block';
-        sel.addEventListener('change', () => { nar.voiceId = sel.value; });
+        sel.addEventListener('change', () => { nar.voiceId = sel.value; lsSet('dragonfly-voice', sel.value); });
         document.getElementById('nStatus').textContent = 'Close your eyes \u2014 the voice does the remembering.';
       }
     })
@@ -1205,6 +1214,7 @@ nVoiceOn.addEventListener('click', () => {
   nVoiceOn.classList.toggle('active', nar.on);
   nVoiceOn.textContent = nar.on ? 'Voice on' : 'Voice off';
   if (!nar.on) narStop();
+  lsSet('dragonfly-voice-on', nar.on ? '1' : '0');
 });
 document.getElementById('nSample').addEventListener('click', () => {
   narUnlock();
@@ -1495,6 +1505,44 @@ hardMoments.forEach(hm => {
   });
   hdChipsEl.appendChild(b);
 });
+/* ---------- Quality of life: builder flag, meeting-day, remembered choices ---------- */
+try { if (location.search.indexOf('jon=1') !== -1) lsSet('dragonfly-builder', '1'); } catch (e) {}
+const isBuilder = lsGet('dragonfly-builder') === '1';
+
+// Meeting-day awareness — Wednesday is her Northern Liberties night
+(function () {
+  if (isBuilder) return;
+  const el = document.getElementById('meetnote');
+  const day = now.getDay();
+  if (day === 3) {
+    el.textContent = 'Meeting tonight — 7:00 at Northern Liberties. Just getting dressed counts.';
+    el.style.display = 'block';
+  } else if (day === 4) {
+    el.textContent = 'If you made it last night — proud of you. If not — Wednesday comes back every week.';
+    el.style.display = 'block';
+  }
+})();
+
+// Restore remembered choices
+(function () {
+  if (lsGet('dragonfly-voice-on') === '0') {
+    nar.on = false;
+    nVoiceOn.classList.remove('active');
+    nVoiceOn.textContent = 'Voice off';
+  }
+  const t = lsGet('dragonfly-breath-tech');
+  if (t && stTech[t]) {
+    stSel = t;
+    document.querySelectorAll('#stTechChips .chip').forEach(c => c.classList.toggle('active', c.dataset.tech === t));
+    document.getElementById('stTechNote').textContent = stTech[t].note;
+  }
+  const m = parseInt(lsGet('dragonfly-breath-min') || '', 10);
+  if (m && [1, 3, 5].indexOf(m) !== -1) {
+    stMin = m;
+    document.querySelectorAll('#stDurChips .chip').forEach(c => c.classList.toggle('active', parseInt(c.dataset.min, 10) === m));
+  }
+})();
+
 </script>
 </body>
 </html>
