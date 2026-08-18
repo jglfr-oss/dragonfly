@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
   try {
     if (cid) {
       const r2 = await fetch(
-        `https://api.elevenlabs.io/v2/voices?collection_id=${encodeURIComponent(cid)}&voice_type=saved&page_size=100`,
+        ``https://api.elevenlabs.io/v2/voices?collection_id=${encodeURIComponent(cid)}&voice_type=saved&page_size=100`,
         { headers: { "xi-api-key": key } }
       );
       if (r2.ok) {
