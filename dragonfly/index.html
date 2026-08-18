@@ -1514,11 +1514,15 @@ const isBuilder = lsGet('dragonfly-builder') === '1';
   if (isBuilder) return;
   const el = document.getElementById('meetnote');
   const day = now.getDay();
+  const hr = now.getHours() + now.getMinutes() / 60;
   if (day === 3) {
     el.textContent = 'Meeting tonight — 7:00 at Northern Liberties. Just getting dressed counts.';
     el.style.display = 'block';
   } else if (day === 4) {
     el.textContent = 'If you made it last night — proud of you. If not — Wednesday comes back every week.';
+    el.style.display = 'block';
+  } else if (day === 6 && hr < 10.5) {
+    el.textContent = 'Meeting this morning — 10:30 at Northern Liberties. Showing up sleepy still counts.';
     el.style.display = 'block';
   }
 })();
