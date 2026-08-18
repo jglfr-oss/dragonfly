@@ -1176,6 +1176,10 @@ async function narFetch(text) {
   nar.cache.set(key, u);
   return u;
 }
+function narNotice(msg) {
+  const st = document.getElementById('nStatus');
+  if (st && !st.dataset.warned) { st.dataset.warned = '1'; st.textContent = msg; }
+}
 async function narSpeak(text, rate) {
   if (!text || !nar.on) return;
   if (!nar.ready || !nar.voiceId) { narBrowser(text, rate); return; }
@@ -1185,7 +1189,10 @@ async function narSpeak(text, rate) {
     const u = await narFetch(text);
     el.src = u;
     await el.play();
-  } catch (e) { narBrowser(text, rate); }
+  } catch (e) {
+    narNotice('Using the built-in voice for now \u2014 the narrator couldn\u2019t be reached.');
+    narBrowser(text, rate);
+  }
 }
 async function narPrefetch(lines) {
   if (!nar.ready || !nar.voiceId) return;
