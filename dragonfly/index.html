@@ -557,6 +557,35 @@
       <p class="greet" style="margin-top:4px">Every hall, every time — a meeting is always near</p>
     </header>
 
+    <section class="card">
+      <p class="eyebrow">Home</p>
+      <h2>Tacony Creek Park</h2>
+      <p class="lead">Your congregation — where “welcome back” happened.</p>
+      <div class="weeklinks">
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--moss)"></span>
+          <span>
+            <span class="t">Midweek meeting</span><br>
+            <span class="s">Wednesday 7:00 PM</span>
+          </span>
+        </div>
+        <div class="wlink" style="cursor:default">
+          <span class="dot" style="background:var(--orchid)"></span>
+          <span>
+            <span class="t">Weekend meeting</span><br>
+            <span class="s">Saturday 10:00 AM</span>
+          </span>
+        </div>
+      </div>
+      <p style="margin-top:18px;font-size:14.5px;color:var(--paper-dim);line-height:1.5">
+        <strong style="color:var(--paper)">Kingdom Hall</strong><br>
+        5004 N Gratz St<br>
+        Philadelphia, PA 19141<br>
+        267-847-4478<br>
+        <span style="color:var(--moss)">About 4 mi · 15 min</span>
+      </p>
+    </section>
+
 <section class="card violet">
       <p class="eyebrow">Meetings nearby</p>
       <h2>If you feel like sitting in</h2>
@@ -586,10 +615,9 @@
       </div>
       <p style="margin-top:18px;font-size:14.5px;color:var(--paper-dim);line-height:1.5">
         <strong style="color:var(--paper)">East Park Kingdom Hall</strong><br>
-        2901 W Glenwood Ave<br>
-        Philadelphia, PA 19121<br>
-        215-765-1904<br>
-        <span style="color:var(--moss)">About 2 mi · 10 min drive</span>
+        <s style="opacity:.55">2901 W Glenwood Ave, Philadelphia, PA 19121</s><br>
+        <span style="color:var(--rose);font-weight:600">Under renovation — meetings temporarily relocated</span><br>
+        215-765-1904
       </p>
     </section>
 
@@ -1542,13 +1570,13 @@ const isBuilder = lsGet('dragonfly-builder') === '1';
   const day = now.getDay();
   const hr = now.getHours() + now.getMinutes() / 60;
   if (day === 3) {
-    el.textContent = 'Meeting tonight — 7:00 at Northern Liberties. Just getting dressed counts.';
+    el.textContent = 'Meeting tonight — 7:00 at Tacony Creek. Just getting dressed counts.';
     el.style.display = 'block';
   } else if (day === 4) {
     el.textContent = 'If you made it last night — proud of you. If not — Wednesday comes back every week.';
     el.style.display = 'block';
-  } else if (day === 6 && hr < 10.5) {
-    el.textContent = 'Meeting this morning — 10:30 at Northern Liberties. Showing up sleepy still counts.';
+  } else if (day === 6 && hr < 10) {
+    el.textContent = 'Meeting this morning — 10:00 at Tacony Creek. Showing up sleepy still counts.';
     el.style.display = 'block';
   }
 })();
